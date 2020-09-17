@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Heorhii Sokolovskyi](https://up.htmlacademy.ru/javascript/21/user/1484665).
-* Наставник: `Неизвестно`.
+* Наставник: `Даниил Стерликов`.
 
 ---
 
