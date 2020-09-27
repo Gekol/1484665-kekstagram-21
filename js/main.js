@@ -93,9 +93,11 @@ function bigPictureSetup(pictureData) {
   bigPicture.querySelector(`.social__caption`).textContent = pictureData[0].description;
   let commentsBlock = bigPicture.querySelector(`.social__comments`);
   commentsBlock.innerHTML = ``;
+  let comments = document.createDocumentFragment();
   for (let comment of pictureData[0].comments) {
-    commentsBlock.appendChild(createCommentElem(comment));
+    comments.appendChild(createCommentElem(comment));
   }
+  commentsBlock.appendChild(comments);
 }
 
 function main() {
