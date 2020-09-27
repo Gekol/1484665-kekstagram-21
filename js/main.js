@@ -10,8 +10,9 @@ const COMMENTS = [`Всё отлично!`,
 const PHOTOS_COUNT = 25;
 const MIN_LIKES = 15;
 const MAX_LIKES = 200;
-const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
-const picturesList = document.querySelector(`.pictures`);
+const PICTURE_TEMPLATE = document.querySelector(`#picture`).content.querySelector(`.picture`);
+
+let picturesList = document.querySelector(`.pictures`);
 
 function generateRandomInt(maxNum = 1, minNum = 0) {
   return Math.round(Math.random() * (maxNum - minNum)) + minNum;
@@ -46,7 +47,7 @@ function generatePictureData() {
 }
 
 function generatePictureElem(data) {
-  const newElem = pictureTemplate.cloneNode(true);
+  let newElem = PICTURE_TEMPLATE.cloneNode(true);
   newElem.querySelector(`.picture__img`).src = data.url;
   newElem.querySelector(`.picture__likes`).textContent = data.likes;
   newElem.querySelector(`.picture__comments`).textContent = data.comments.length;
@@ -54,8 +55,8 @@ function generatePictureElem(data) {
 }
 
 function generatePictureElems() {
-  const fragment = document.createDocumentFragment();
-  const pictureData = generatePictureData();
+  let fragment = document.createDocumentFragment();
+  let pictureData = generatePictureData();
   for (let data of pictureData) {
     fragment.appendChild(generatePictureElem(data));
   }
