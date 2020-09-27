@@ -54,9 +54,8 @@ function generatePictureElem(data) {
   return newElem;
 }
 
-function generatePictureElems() {
+function generatePictureElems(pictureData) {
   let fragment = document.createDocumentFragment();
-  let pictureData = generatePictureData();
   for (let data of pictureData) {
     fragment.appendChild(generatePictureElem(data));
   }
@@ -64,7 +63,8 @@ function generatePictureElems() {
 }
 
 function main() {
-  generatePictureElems();
+  let pictureData = generatePictureData();
+  generatePictureElems(pictureData);
 }
 
 main();
