@@ -18,7 +18,16 @@ function generateRandomInt(maxNum = 1, minNum = 0) {
   return Math.round(Math.random() * (maxNum - minNum)) + minNum;
 }
 
-function createComment() {
+function makeElement(tagName, className, text) {
+  let newElem = document.createElement(tagName);
+  if (text !== undefined) {
+    newElem.textContent = text;
+  }
+  newElem.classList.add(className);
+  return newElem;
+}
+
+function createCommentData() {
   let newComment = {
     avatar: `img/avatar-${generateRandomInt(6, 1)}.svg`,
     message: `${COMMENTS[generateRandomInt(COMMENTS.length - 1)]}`,
@@ -39,7 +48,7 @@ function generatePictureData() {
     };
     const commentsCount = generateRandomInt(10);
     for (let j = 0; j < commentsCount; j++) {
-      newDescription.comments[j] = createComment();
+      newDescription.comments[j] = createCommentData();
     }
     descriptions[i - 1] = newDescription;
   }
@@ -62,15 +71,6 @@ function generatePictureElems(pictureData) {
   picturesList.appendChild(fragment);
 }
 
-function makeElement(tagName, className, text) {
-  let newElem = document.createElement(tagName);
-  if (text !== undefined) {
-    newElem.textContent = text;
-  }
-  newElem.classList.add(className);
-  return newElem;
-}
-
 function createCommentElem(commentData) {
   let newComment = makeElement(`li`, `social__comment`);
   let commentImage = makeElement(`img`, `social__picture`);
@@ -84,9 +84,7 @@ function createCommentElem(commentData) {
   return newComment;
 }
 
-function main() {
-  let pictureData = generatePictureData();
-  generatePictureElems(pictureData);
+function bigPictureSetup(pictureData) {
   const bigPicture = document.querySelector(`.big-picture`);
   bigPicture.classList.remove(`hidden`);
   bigPicture.querySelector(`.big-picture__img`).children[0].src = pictureData[0].url;
@@ -98,7 +96,12 @@ function main() {
   for (let comment of pictureData[0].comments) {
     commentsBlock.appendChild(createCommentElem(comment));
   }
+}
 
+function main() {
+  let pictureData = generatePictureData();
+  generatePictureElems(pictureData);
+  bigPictureSetup(pictureData);
   document.querySelector(`.social__comment-count`).classList.add(`hidden`);
   document.querySelector(`.comments-loader`).classList.add(`hidden`);
   document.body.classList.add(`modal-open`);
