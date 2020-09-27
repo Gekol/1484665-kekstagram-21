@@ -21,8 +21,8 @@ function generateRandomInt(maxNum = 1, minNum = 0) {
 function createComment() {
   let newComment = {
     avatar: `img/avatar-${generateRandomInt(6, 1)}.svg`,
-    message: `${COMMENTS[generateRandomInt(COMMENTS.length)]}`,
-    name: `${NAMES[generateRandomInt(NAMES.length)]}`
+    message: `${COMMENTS[generateRandomInt(COMMENTS.length - 1)]}`,
+    name: `${NAMES[generateRandomInt(NAMES.length - 1)]}`
   };
   return newComment;
 }
