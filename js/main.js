@@ -10,47 +10,42 @@ const COMMENTS = [`Всё отлично!`,
 const PHOTOS_COUNT = 25;
 const MIN_LIKES = 15;
 const MAX_LIKES = 200;
-const PICTURE_TEMPLATE = document.querySelector(`#picture`).content.querySelector(`.picture`);
 
-let picturesList = document.querySelector(`.pictures`);
-
-function generateRandomInt(maxNum = 1, minNum = 0) {
+function generateRandomInt(minNum = 0, maxNum = 1) {
   return Math.round(Math.random() * (maxNum - minNum)) + minNum;
 }
 
-function createComment() {
-  let newComment = {
-    avatar: `img/avatar-${generateRandomInt(6, 1)}.svg`,
-    message: `${COMMENTS[generateRandomInt(COMMENTS.length - 1)]}`,
-    name: `${NAMES[generateRandomInt(NAMES.length - 1)]}`
-  };
-  return newComment;
+function createComments(commentsCount) {
+  let comments = [];
+  for (let j = 0; j < commentsCount; j++) {
+    comments.push({
+      avatar: `img/avatar-${generateRandomInt(1, 6)}.svg`,
+      message: `${COMMENTS[generateRandomInt(0, COMMENTS.length - 1)]}`,
+      name: `${NAMES[generateRandomInt(0, NAMES.length - 1)]}`
+    });
+  }
+  return comments;
 }
 
 function generatePictureData() {
   let descriptions = [];
-
   for (let i = 1; i <= PHOTOS_COUNT; i++) {
-    let newDescription = {
+    descriptions.push({
       url: `photos/${i}.jpg`,
       description: `Photo № ${i}`,
-      likes: generateRandomInt(MAX_LIKES, MIN_LIKES),
-      comments: []
-    };
-    const commentsCount = generateRandomInt(10);
-    for (let j = 0; j < commentsCount; j++) {
-      newDescription.comments[j] = createComment();
-    }
-    descriptions[i - 1] = newDescription;
+      likes: generateRandomInt(MIN_LIKES, MAX_LIKES),
+      comments: createComments(generateRandomInt(0, 10))
+    });
   }
   return descriptions;
 }
 
 function generatePictureElem(data) {
-  let newElem = PICTURE_TEMPLATE.cloneNode(true);
+  const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
+  let newElem = pictureTemplate.cloneNode(true);
   newElem.querySelector(`.picture__img`).src = data.url;
   newElem.querySelector(`.picture__likes`).textContent = data.likes;
-  newElem.querySelector(`.picture__comments`).textContent = data.comments.length;
+  newElem.querySelector(`.picture__comments`).textContent = data.comments.length.toString();
   return newElem;
 }
 
@@ -59,12 +54,12 @@ function generatePictureElems(pictureData) {
   for (let data of pictureData) {
     fragment.appendChild(generatePictureElem(data));
   }
+  let picturesList = document.querySelector(`.pictures`);
   picturesList.appendChild(fragment);
 }
 
 function main() {
-  let pictureData = generatePictureData();
-  generatePictureElems(pictureData);
+  generatePictureElems(generatePictureData());
 }
 
 main();
