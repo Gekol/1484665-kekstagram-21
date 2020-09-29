@@ -1,6 +1,6 @@
 'use strict';
 
-const NAMES = [`Михаил`, `Георгий`, `Алексей`, `Ольга`, `Ирина`, `Наталья`, `Виктор`, `Юлия`, `Елизавета`, `Светлана`, `Константин`];
+const NAMES = [`Михаил`, `Георгий`, `Алексей`, `Ольга`, `Ирина`, `Наталья`, `Виктор`, `Даниил`, `Юлия`, `Елизавета`, `Светлана`, `Константин`];
 const COMMENTS = [`Всё отлично!`,
   `В целом всё неплохо. Но не всё.`,
   `Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.`,
@@ -13,6 +13,15 @@ const MAX_LIKES = 200;
 
 function generateRandomInt(minNum = 0, maxNum = 1) {
   return Math.round(Math.random() * (maxNum - minNum)) + minNum;
+}
+
+function makeElement(tagName, className, text) {
+  const newElem = document.createElement(tagName);
+  if (text !== undefined) {
+    newElem.textContent = text;
+  }
+  newElem.classList.add(className);
+  return newElem;
 }
 
 function createComments(commentsCount) {
@@ -42,7 +51,7 @@ function generatePictureData() {
 
 function generatePictureElem(data) {
   const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
-  let newElem = pictureTemplate.cloneNode(true);
+  const newElem = pictureTemplate.cloneNode(true);
   newElem.querySelector(`.picture__img`).src = data.url;
   newElem.querySelector(`.picture__likes`).textContent = data.likes;
   newElem.querySelector(`.picture__comments`).textContent = data.comments.length.toString();
@@ -50,16 +59,50 @@ function generatePictureElem(data) {
 }
 
 function generatePictureElems(pictureData) {
-  let fragment = document.createDocumentFragment();
-  for (let data of pictureData) {
+  const fragment = document.createDocumentFragment();
+  for (const data of pictureData) {
     fragment.appendChild(generatePictureElem(data));
   }
-  let picturesList = document.querySelector(`.pictures`);
+  const picturesList = document.querySelector(`.pictures`);
   picturesList.appendChild(fragment);
 }
 
+function createCommentElem(commentData) {
+  const newComment = makeElement(`li`, `social__comment`);
+  const commentImage = makeElement(`img`, `social__picture`);
+  commentImage.src = commentData.avatar;
+  commentImage.alt = commentData.name;
+  commentImage.width = `35`;
+  commentImage.height = `35`;
+  newComment.appendChild(commentImage);
+  const commentText = makeElement(`p`, `social__text`, commentData.message);
+  newComment.appendChild(commentText);
+  return newComment;
+}
+
+function bigPictureSetup(pictureData) {
+  const bigPicture = document.querySelector(`.big-picture`);
+  bigPicture.classList.remove(`hidden`);
+  bigPicture.querySelector(`.big-picture__img img`).src = pictureData.url;
+  bigPicture.querySelector(`.likes-count`).textContent = pictureData.likes;
+  bigPicture.querySelector(`.comments-count`).textContent = pictureData.comments.length;
+  bigPicture.querySelector(`.social__caption`).textContent = pictureData.description;
+  const commentsBlock = bigPicture.querySelector(`.social__comments`);
+  commentsBlock.innerHTML = ``;
+  const comments = document.createDocumentFragment();
+  for (const comment of pictureData.comments) {
+    comments.appendChild(createCommentElem(comment));
+  }
+  commentsBlock.appendChild(comments);
+}
+
 function main() {
-  generatePictureElems(generatePictureData());
+  const pictureData = generatePictureData();
+  generatePictureElems(pictureData);
+  bigPictureSetup(pictureData[0]);
+  document.querySelector(`.social__comment-count`).classList.add(`hidden`);
+  document.querySelector(`.comments-loader`).classList.add(`hidden`);
+  document.body.classList.add(`modal-open`);
 }
 
 main();
