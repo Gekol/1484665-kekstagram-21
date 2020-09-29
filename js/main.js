@@ -16,7 +16,7 @@ function generateRandomInt(minNum = 0, maxNum = 1) {
 }
 
 function makeElement(tagName, className, text) {
-  let newElem = document.createElement(tagName);
+  const newElem = document.createElement(tagName);
   if (text !== undefined) {
     newElem.textContent = text;
   }
@@ -51,7 +51,7 @@ function generatePictureData() {
 
 function generatePictureElem(data) {
   const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
-  let newElem = pictureTemplate.cloneNode(true);
+  const newElem = pictureTemplate.cloneNode(true);
   newElem.querySelector(`.picture__img`).src = data.url;
   newElem.querySelector(`.picture__likes`).textContent = data.likes;
   newElem.querySelector(`.picture__comments`).textContent = data.comments.length.toString();
@@ -59,23 +59,23 @@ function generatePictureElem(data) {
 }
 
 function generatePictureElems(pictureData) {
-  let fragment = document.createDocumentFragment();
-  for (let data of pictureData) {
+  const fragment = document.createDocumentFragment();
+  for (const data of pictureData) {
     fragment.appendChild(generatePictureElem(data));
   }
-  let picturesList = document.querySelector(`.pictures`);
+  const picturesList = document.querySelector(`.pictures`);
   picturesList.appendChild(fragment);
 }
 
 function createCommentElem(commentData) {
-  let newComment = makeElement(`li`, `social__comment`);
-  let commentImage = makeElement(`img`, `social__picture`);
+  const newComment = makeElement(`li`, `social__comment`);
+  const commentImage = makeElement(`img`, `social__picture`);
   commentImage.src = commentData.avatar;
   commentImage.alt = commentData.name;
   commentImage.width = `35`;
   commentImage.height = `35`;
   newComment.appendChild(commentImage);
-  let commentText = makeElement(`p`, `social__text`, commentData.message);
+  const commentText = makeElement(`p`, `social__text`, commentData.message);
   newComment.appendChild(commentText);
   return newComment;
 }
@@ -87,17 +87,17 @@ function bigPictureSetup(pictureData) {
   bigPicture.querySelector(`.likes-count`).textContent = pictureData.likes;
   bigPicture.querySelector(`.comments-count`).textContent = pictureData.comments.length;
   bigPicture.querySelector(`.social__caption`).textContent = pictureData.description;
-  let commentsBlock = bigPicture.querySelector(`.social__comments`);
+  const commentsBlock = bigPicture.querySelector(`.social__comments`);
   commentsBlock.innerHTML = ``;
-  let comments = document.createDocumentFragment();
-  for (let comment of pictureData.comments) {
+  const comments = document.createDocumentFragment();
+  for (const comment of pictureData.comments) {
     comments.appendChild(createCommentElem(comment));
   }
   commentsBlock.appendChild(comments);
 }
 
 function main() {
-  let pictureData = generatePictureData();
+  const pictureData = generatePictureData();
   generatePictureElems(pictureData);
   bigPictureSetup(pictureData[0]);
   document.querySelector(`.social__comment-count`).classList.add(`hidden`);
