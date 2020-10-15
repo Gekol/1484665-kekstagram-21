@@ -10,6 +10,38 @@ const COMMENTS = [`Всё отлично!`,
 const PHOTOS_COUNT = 25;
 const MIN_LIKES = 15;
 const MAX_LIKES = 200;
+const EFFECTS = {
+  chrome: {
+    effect: `grayscale`,
+    min: 0,
+    max: 1,
+    unit: ``
+  },
+  sepia: {
+    effect: `sepia`,
+    min: 0,
+    max: 1,
+    unit: ``
+  },
+  marvin: {
+    effect: `invert`,
+    min: 0,
+    max: 100,
+    unit: `%`
+  },
+  phobos: {
+    effect: `blur`,
+    min: 0,
+    max: 3,
+    unit: `px`
+  },
+  heat: {
+    effect: `brightness`,
+    min: 1,
+    max: 3,
+    unit: ``
+  }
+};
 
 function generateRandomInt(minNum = 0, maxNum = 1) {
   return Math.round(Math.random() * (maxNum - minNum)) + minNum;
@@ -22,6 +54,20 @@ function makeElement(tagName, className, text) {
   }
   newElem.classList.add(className);
   return newElem;
+}
+
+function showBlock(selector) {
+  let block = document.querySelector(selector);
+  if (block !== undefined) {
+    block.classList.remove(`hidden`);
+  }
+}
+
+function hideBlock(selector) {
+  let block = document.querySelector(selector);
+  if (block !== undefined) {
+    block.classList.add(`hidden`);
+  }
 }
 
 function createComments(commentsCount) {
@@ -96,13 +142,112 @@ function bigPictureSetup(pictureData) {
   commentsBlock.appendChild(comments);
 }
 
+function changeSize(imageUploadPreview) {
+  const shrinkButton = document.querySelector(`.scale__control--smaller`);
+  const enlargeButton = document.querySelector(`.scale__control--bigger`);
+  const size = document.querySelector(`.scale__control--value`);
+  shrinkButton.addEventListener(`click`, function () {
+    const currentValue = size.value;
+    if (currentValue !== `25%`) {
+      size.value = `${(parseInt(currentValue.substring(0, currentValue.length - 1), 10) - 25).toString()}%`;
+      imageUploadPreview.style.transform = `scale(${(parseInt(size.value, 10) / 100).toString()})`;
+    }
+  });
+  enlargeButton.addEventListener(`click`, function () {
+    const currentValue = size.value;
+    if (currentValue !== `100%`) {
+      size.value = `${(parseInt(currentValue.substring(0, currentValue.length - 1), 10) + 25).toString()}%`;
+      imageUploadPreview.style.transform = `scale(${(parseInt(size.value, 10) / 100).toString()})`;
+    }
+  });
+}
+
+function hideUploadFormByEsc(evt) {
+  if (evt.key === `Escape`) {
+    hideBlock(`.img-upload__overlay`);
+  }
+}
+
+function showUploadForm() {
+  const uploadFileButton = document.querySelector(`#upload-file`);
+  uploadFileButton.addEventListener(`click`, function () {
+    showBlock(`.img-upload__overlay`);
+    document.body.classList.add(`modal-open`);
+    document.body.addEventListener(`keydown`, hideUploadFormByEsc);
+  });
+}
+
+function showUploadCancelForm() {
+  const uploadFileCancelButton = document.querySelector(`#upload-cancel`);
+  uploadFileCancelButton.addEventListener(`click`, function () {
+    hideBlock(`.img-upload__overlay`);
+    document.body.classList.remove(`modal-open`);
+    document.body.removeEventListener(`keydown`, hideUploadFormByEsc);
+  });
+}
+
+function changeEffect(imageUploadPreview) {
+  const effects = document.querySelectorAll(`.effects__radio`);
+  let currentEfect = `none`;
+  for (const effect of effects) {
+    effect.addEventListener(`change`, function () {
+      imageUploadPreview.classList.remove(`effects__preview--${currentEfect}`);
+      currentEfect = effect.value;
+      imageUploadPreview.classList.add(`effects__preview--${currentEfect}`);
+    });
+  }
+}
+
+function changeEffectIntensity(imageUploadPreview) {
+  const levelPin = document.querySelector(`.effect-level__pin`);
+  levelPin.addEventListener(`mousedown`, function () {
+    const effectIntensityValue = document.querySelector(`.effect-level__value`);
+    if (imageUploadPreview.classList.length > 1) {
+      const effectClass = imageUploadPreview.classList[1];
+      const effectIntensity = EFFECTS[effectClass.substring(18, effectClass.length)];
+      imageUploadPreview.querySelector(`img`).style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) / 100 }${effectIntensity.unit})`;
+    }
+  });
+}
+
+function checkHashTag(hashtagInput) {
+  const hashtags = hashtagInput.value.split(` `);
+  if (hashtags.length > 5) {
+    hashtagInput.setCustomValidity(`You can write at most five hashtags!!!`);
+  }
+  if (new Set(hashtags).size < hashtags.length) {
+    hashtagInput.setCustomValidity(`You cannot use the same hashtags!!!`);
+  }
+  const hashTagRegExp = /#[\da-zA-Z]+/;
+  for (const hashtag of hashtags) {
+    if (hashtag[0] !== `#`) {
+      hashtagInput.setCustomValidity(`Hashtag must start with '#'!!!`);
+    } else if (hashtag === `#`) {
+      hashtagInput.setCustomValidity(`Hashtag must have at least one symbol after '#'!!!`);
+    } else if (hashtag.length > 20) {
+      hashtagInput.setCustomValidity(`Hashtag is too long!!!`);
+    } else if (hashTagRegExp.test(hashtag) !== 0) {
+      hashtagInput.setCustomValidity(`Hashtag must contain only '#', letters and numbers!!!`);
+    }
+  }
+}
+
 function main() {
   const pictureData = generatePictureData();
   generatePictureElems(pictureData);
-  bigPictureSetup(pictureData[0]);
+  // bigPictureSetup(pictureData[0]);
+  const hashtagInput = document.querySelector(`.text__hashtags`);
+  hashtagInput.addEventListener(`change`, function () {
+    checkHashTag(hashtagInput);
+  });
+  showUploadForm();
+  showUploadCancelForm();
+  const imageUploadPreview = document.querySelector(`.img-upload__preview`);
+  changeSize(imageUploadPreview);
+  changeEffect(imageUploadPreview);
+  changeEffectIntensity(imageUploadPreview);
   document.querySelector(`.social__comment-count`).classList.add(`hidden`);
   document.querySelector(`.comments-loader`).classList.add(`hidden`);
-  document.body.classList.add(`modal-open`);
 }
 
 main();
