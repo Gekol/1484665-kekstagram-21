@@ -42,19 +42,22 @@ const EFFECTS = {
     unit: ``
   }
 };
+const MIN_VALUE = 25;
+const MAX_VALUE = 100;
+const SCALE_STEP = 25;
 
 function generateRandomInt(minNum = 0, maxNum = 1) {
   return Math.round(Math.random() * (maxNum - minNum)) + minNum;
 }
 
-function makeElement(tagName, className, text) {
-  const newElem = document.createElement(tagName);
-  if (text !== undefined) {
-    newElem.textContent = text;
-  }
-  newElem.classList.add(className);
-  return newElem;
-}
+// function makeElement(tagName, className, text) {
+//   const newElem = document.createElement(tagName);
+//   if (text !== undefined) {
+//     newElem.textContent = text;
+//   }
+//   newElem.classList.add(className);
+//   return newElem;
+// }
 
 function showBlock(selector) {
   let block = document.querySelector(selector);
@@ -113,51 +116,51 @@ function generatePictureElems(pictureData) {
   picturesList.appendChild(fragment);
 }
 
-function createCommentElem(commentData) {
-  const newComment = makeElement(`li`, `social__comment`);
-  const commentImage = makeElement(`img`, `social__picture`);
-  commentImage.src = commentData.avatar;
-  commentImage.alt = commentData.name;
-  commentImage.width = `35`;
-  commentImage.height = `35`;
-  newComment.appendChild(commentImage);
-  const commentText = makeElement(`p`, `social__text`, commentData.message);
-  newComment.appendChild(commentText);
-  return newComment;
-}
+// function createCommentElem(commentData) {
+//   const newComment = makeElement(`li`, `social__comment`);
+//   const commentImage = makeElement(`img`, `social__picture`);
+//   commentImage.src = commentData.avatar;
+//   commentImage.alt = commentData.name;
+//   commentImage.width = `35`;
+//   commentImage.height = `35`;
+//   newComment.appendChild(commentImage);
+//   const commentText = makeElement(`p`, `social__text`, commentData.message);
+//   newComment.appendChild(commentText);
+//   return newComment;
+// }
 
-function bigPictureSetup(pictureData) {
-  const bigPicture = document.querySelector(`.big-picture`);
-  bigPicture.classList.remove(`hidden`);
-  bigPicture.querySelector(`.big-picture__img img`).src = pictureData.url;
-  bigPicture.querySelector(`.likes-count`).textContent = pictureData.likes;
-  bigPicture.querySelector(`.comments-count`).textContent = pictureData.comments.length;
-  bigPicture.querySelector(`.social__caption`).textContent = pictureData.description;
-  const commentsBlock = bigPicture.querySelector(`.social__comments`);
-  commentsBlock.innerHTML = ``;
-  const comments = document.createDocumentFragment();
-  for (const comment of pictureData.comments) {
-    comments.appendChild(createCommentElem(comment));
-  }
-  commentsBlock.appendChild(comments);
-}
+// function bigPictureSetup(pictureData) {
+//   const bigPicture = document.querySelector(`.big-picture`);
+//   bigPicture.classList.remove(`hidden`);
+//   bigPicture.querySelector(`.big-picture__img img`).src = pictureData.url;
+//   bigPicture.querySelector(`.likes-count`).textContent = pictureData.likes;
+//   bigPicture.querySelector(`.comments-count`).textContent = pictureData.comments.length;
+//   bigPicture.querySelector(`.social__caption`).textContent = pictureData.description;
+//   const commentsBlock = bigPicture.querySelector(`.social__comments`);
+//   commentsBlock.innerHTML = ``;
+//   const comments = document.createDocumentFragment();
+//   for (const comment of pictureData.comments) {
+//     comments.appendChild(createCommentElem(comment));
+//   }
+//   commentsBlock.appendChild(comments);
+// }
 
-function changeSize(imageUploadPreview) {
+function setupSizeChanging(imageUploadPreview) {
   const shrinkButton = document.querySelector(`.scale__control--smaller`);
   const enlargeButton = document.querySelector(`.scale__control--bigger`);
-  const size = document.querySelector(`.scale__control--value`);
+  const sizeElement = document.querySelector(`.scale__control--value`);
   shrinkButton.addEventListener(`click`, function () {
-    const currentValue = size.value;
-    if (currentValue !== `25%`) {
-      size.value = `${(parseInt(currentValue.substring(0, currentValue.length - 1), 10) - 25).toString()}%`;
-      imageUploadPreview.style.transform = `scale(${(parseInt(size.value, 10) / 100).toString()})`;
+    const currentValue = sizeElement.value;
+    if (currentValue !== (MIN_VALUE + `%`)) {
+      sizeElement.value = `${(parseInt(currentValue.substring(0, currentValue.length - 1), 10) - SCALE_STEP).toString()}%`;
+      imageUploadPreview.style.transform = `scale(${(parseInt(sizeElement.value, 10) / MAX_VALUE).toString()})`;
     }
   });
   enlargeButton.addEventListener(`click`, function () {
-    const currentValue = size.value;
-    if (currentValue !== `100%`) {
-      size.value = `${(parseInt(currentValue.substring(0, currentValue.length - 1), 10) + 25).toString()}%`;
-      imageUploadPreview.style.transform = `scale(${(parseInt(size.value, 10) / 100).toString()})`;
+    const currentValue = sizeElement.value;
+    if (currentValue !== (MAX_VALUE + `%`)) {
+      sizeElement.value = `${(parseInt(currentValue.substring(0, currentValue.length - 1), 10) + SCALE_STEP).toString()}%`;
+      imageUploadPreview.style.transform = `scale(${(parseInt(sizeElement.value, 10) / MAX_VALUE).toString()})`;
     }
   });
 }
@@ -168,7 +171,7 @@ function hideUploadFormByEsc(evt) {
   }
 }
 
-function showUploadForm() {
+function uploadFormShowing() {
   const uploadFileButton = document.querySelector(`#upload-file`);
   uploadFileButton.addEventListener(`click`, function () {
     showBlock(`.img-upload__overlay`);
@@ -177,7 +180,7 @@ function showUploadForm() {
   });
 }
 
-function showUploadCancelForm() {
+function uploadFormHiding() {
   const uploadFileCancelButton = document.querySelector(`#upload-cancel`);
   uploadFileCancelButton.addEventListener(`click`, function () {
     hideBlock(`.img-upload__overlay`);
@@ -186,22 +189,22 @@ function showUploadCancelForm() {
   });
 }
 
-function changeEffect(imageUploadPreview) {
+function effectChanging(imageUploadPreview) {
   const effects = document.querySelectorAll(`.effects__radio`);
-  let currentEfect = `none`;
+  let currentEffect = `none`;
   for (const effect of effects) {
     effect.addEventListener(`change`, function () {
-      imageUploadPreview.classList.remove(`effects__preview--${currentEfect}`);
-      currentEfect = effect.value;
-      imageUploadPreview.classList.add(`effects__preview--${currentEfect}`);
+      imageUploadPreview.classList.remove(`effects__preview--${currentEffect}`);
+      currentEffect = effect.value;
+      imageUploadPreview.classList.add(`effects__preview--${currentEffect}`);
     });
   }
 }
 
-function changeEffectIntensity(imageUploadPreview) {
+function effectIntensityChanging(imageUploadPreview) {
   const levelPin = document.querySelector(`.effect-level__pin`);
   levelPin.addEventListener(`mousedown`, function () {
-    const effectIntensityValue = document.querySelector(`.effect-level__value`);
+    const effectIntensityValue = document.querySelector(`.effect-level__value`).value;
     if (imageUploadPreview.classList.length > 1) {
       const effectClass = imageUploadPreview.classList[1];
       const effectIntensity = EFFECTS[effectClass.substring(18, effectClass.length)];
@@ -218,7 +221,7 @@ function checkHashTag(hashtagInput) {
   if (new Set(hashtags).size < hashtags.length) {
     hashtagInput.setCustomValidity(`You cannot use the same hashtags!!!`);
   }
-  const hashTagRegExp = /#[\da-zA-Z]+/;
+  const hashTagRegExp = /#[a-zA-Z\d]+/;
   for (const hashtag of hashtags) {
     if (hashtag[0] !== `#`) {
       hashtagInput.setCustomValidity(`Hashtag must start with '#'!!!`);
@@ -226,7 +229,7 @@ function checkHashTag(hashtagInput) {
       hashtagInput.setCustomValidity(`Hashtag must have at least one symbol after '#'!!!`);
     } else if (hashtag.length > 20) {
       hashtagInput.setCustomValidity(`Hashtag is too long!!!`);
-    } else if (hashTagRegExp.test(hashtag) !== 0) {
+    } else if (hashTagRegExp.test(hashtag) !== true) {
       hashtagInput.setCustomValidity(`Hashtag must contain only '#', letters and numbers!!!`);
     }
   }
@@ -240,12 +243,12 @@ function main() {
   hashtagInput.addEventListener(`change`, function () {
     checkHashTag(hashtagInput);
   });
-  showUploadForm();
-  showUploadCancelForm();
+  uploadFormShowing();
+  uploadFormHiding();
   const imageUploadPreview = document.querySelector(`.img-upload__preview`);
-  changeSize(imageUploadPreview);
-  changeEffect(imageUploadPreview);
-  changeEffectIntensity(imageUploadPreview);
+  setupSizeChanging(imageUploadPreview);
+  effectChanging(imageUploadPreview);
+  effectIntensityChanging(imageUploadPreview);
   document.querySelector(`.social__comment-count`).classList.add(`hidden`);
   document.querySelector(`.comments-loader`).classList.add(`hidden`);
 }
