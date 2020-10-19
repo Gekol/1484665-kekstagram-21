@@ -166,8 +166,10 @@ function setupSizeChanging(imageUploadPreview) {
 }
 
 function hideUploadFormByEsc(evt) {
-  if (evt.key === `Escape`) {
+  if (evt.key === `Escape` && document.activeElement !== document.querySelector(`.text__hashtags`)) {
     hideBlock(`.img-upload__overlay`);
+    document.body.classList.remove(`modal-open`);
+    document.body.removeEventListener(`keydown`, hideUploadFormByEsc);
   }
 }
 
