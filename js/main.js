@@ -235,7 +235,7 @@ function checkHashTag(hashtagInput) {
   if (!checkUniqueValues(hashtags)) {
     hashtagInput.setCustomValidity(`You cannot use the same hashtags!!!`);
   }
-  const hashTagRegExp = /#[a-zA-Z\d]+/;
+  const hashTagRegExp = /#[a-zA-Zа-яА-я\d]+/;
   for (const hashtag of hashtags) {
     if (hashtag[0] !== `#`) {
       hashtagInput.setCustomValidity(`Hashtag must start with '#'!!!`);
