@@ -45,6 +45,7 @@ const EFFECTS = {
 const MIN_VALUE = 25;
 const MAX_VALUE = 100;
 const SCALE_STEP = 25;
+const COMMENT_MAX_LENGTH = 140;
 
 function generateRandomInt(minNum = 0, maxNum = 1) {
   return Math.round(Math.random() * (maxNum - minNum)) + minNum;
@@ -130,17 +131,19 @@ function createCommentElem(commentData) {
   return newComment;
 }
 
+function hideBigPictureByEsc(evt) {
+  if (evt.key === `Escape` && document.activeElement !== document.querySelector(`.social__footer-text`)) {
+    hideBigPictureByClick();
+    document.body.classList.remove(`modal-open`);
+  }
+}
+
 function hideBigPictureByClick() {
   const bigPicture = document.querySelector(`.big-picture`);
   bigPicture.classList.add(`hidden`);
+  document.body.classList.remove(`modal-open`);
   bigPicture.querySelector(`.big-picture__cancel`).removeEventListener(`click`, hideBigPictureByClick);
   document.body.removeEventListener(`keydown`, hideBigPictureByEsc);
-}
-
-function hideBigPictureByEsc(evt) {
-  if (evt.key === `Escape`) {
-    hideBigPictureByClick();
-  }
 }
 
 function bigPictureSetup(pictureData) {
@@ -152,6 +155,7 @@ function bigPictureSetup(pictureData) {
   bigPicture.querySelector(`.social__caption`).textContent = pictureData.description;
   bigPicture.querySelector(`.big-picture__cancel`).addEventListener(`click`, hideBigPictureByClick);
   document.body.addEventListener(`keydown`, hideBigPictureByEsc);
+  document.body.classList.add(`modal-open`);
   const commentsBlock = bigPicture.querySelector(`.social__comments`);
   commentsBlock.innerHTML = ``;
   const comments = document.createDocumentFragment();
@@ -267,13 +271,6 @@ function checkHashTag(hashtagInput) {
   }
 }
 
-function checkComment(commentInput) {
-  const comment = commentInput.value;
-  if (comment.length > 140) {
-    commentInput.setCustomValidity(`Comment is too long!!!`);
-  }
-}
-
 function main() {
   const pictureData = generatePictureData();
   generatePictureElems(pictureData);
@@ -293,9 +290,15 @@ function main() {
     checkHashTag(hashtagInput);
   });
   const commentInput = document.querySelector(`.text__description`);
-  commentInput.addEventListener(`change`, function () {
-    checkComment(commentInput);
-  });
+  commentInput.checkComment = function () {
+    const comment = this.value;
+    if (comment.length > COMMENT_MAX_LENGTH) {
+      this.setCustomValidity(`Comment is too long!!!`);
+    } else if (comment.length === 0) {
+      this.setCustomValidity(`You didn't add any comment!!!`);
+    }
+  };
+  commentInput.addEventListener(`change`, commentInput.checkComment);
   setupUploadFormShowing();
   setupUploadFormHiding();
   const imageUploadPreview = document.querySelector(`.img-upload__preview`);
