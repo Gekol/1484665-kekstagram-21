@@ -207,6 +207,8 @@ function checkHashTag(hashtagInput) {
       hashtagInput.setCustomValidity(`Hashtag is too long!!!`);
     } else if (hashTagRegExp.test(hashtag) !== true) {
       hashtagInput.setCustomValidity(`Hashtag must contain only '#', letters and numbers!!!`);
+    } else {
+      hashtagInput.setCustomValidity(``);
     }
   }
 }
