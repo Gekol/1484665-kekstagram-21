@@ -271,6 +271,15 @@ function checkHashTag(hashtagInput) {
   }
 }
 
+function checkComment(commentInput) {
+  const comment = commentInput.value;
+  if (comment.length > COMMENT_MAX_LENGTH) {
+    commentInput.setCustomValidity(`Comment is too long!!!`);
+  } else if (comment.length === 0) {
+    commentInput.setCustomValidity(`You didn't add any comment!!!`);
+  }
+}
+
 function main() {
   const pictureData = generatePictureData();
   generatePictureElems(pictureData);
@@ -290,15 +299,9 @@ function main() {
     checkHashTag(hashtagInput);
   });
   const commentInput = document.querySelector(`.text__description`);
-  commentInput.checkComment = function () {
-    const comment = this.value;
-    if (comment.length > COMMENT_MAX_LENGTH) {
-      this.setCustomValidity(`Comment is too long!!!`);
-    } else if (comment.length === 0) {
-      this.setCustomValidity(`You didn't add any comment!!!`);
-    }
-  };
-  commentInput.addEventListener(`change`, commentInput.checkComment);
+  commentInput.addEventListener(`change`, function () {
+    checkComment(commentInput);
+  });
   setupUploadFormShowing();
   setupUploadFormHiding();
   const imageUploadPreview = document.querySelector(`.img-upload__preview`);
