@@ -45,9 +45,19 @@ const EFFECTS = {
 const MIN_VALUE = 25;
 const MAX_VALUE = 100;
 const SCALE_STEP = 25;
+const COMMENT_MAX_LENGTH = 140;
 
 function generateRandomInt(minNum = 0, maxNum = 1) {
   return Math.round(Math.random() * (maxNum - minNum)) + minNum;
+}
+
+function makeElement(tagName, className, text) {
+  const newElem = document.createElement(tagName);
+  if (text !== undefined) {
+    newElem.textContent = text;
+  }
+  newElem.classList.add(className);
+  return newElem;
 }
 
 function showBlock(selector) {
@@ -107,6 +117,54 @@ function generatePictureElems(pictureData) {
   picturesList.appendChild(fragment);
 }
 
+
+function createCommentElem(commentData) {
+  const newComment = makeElement(`li`, `social__comment`);
+  const commentImage = makeElement(`img`, `social__picture`);
+  commentImage.src = commentData.avatar;
+  commentImage.alt = commentData.name;
+  commentImage.width = `35`;
+  commentImage.height = `35`;
+  newComment.appendChild(commentImage);
+  const commentText = makeElement(`p`, `social__text`, commentData.message);
+  newComment.appendChild(commentText);
+  return newComment;
+}
+
+function hideBigPictureByEsc(evt) {
+  if (evt.key === `Escape` && document.activeElement !== document.querySelector(`.social__footer-text`)) {
+    hideBigPictureByClick();
+    document.body.classList.remove(`modal-open`);
+  }
+}
+
+function hideBigPictureByClick() {
+  const bigPicture = document.querySelector(`.big-picture`);
+  bigPicture.classList.add(`hidden`);
+  document.body.classList.remove(`modal-open`);
+  bigPicture.querySelector(`.big-picture__cancel`).removeEventListener(`click`, hideBigPictureByClick);
+  document.body.removeEventListener(`keydown`, hideBigPictureByEsc);
+}
+
+function bigPictureSetup(pictureData) {
+  const bigPicture = document.querySelector(`.big-picture`);
+  bigPicture.classList.remove(`hidden`);
+  bigPicture.querySelector(`.big-picture__img img`).src = pictureData.url;
+  bigPicture.querySelector(`.likes-count`).textContent = pictureData.likes;
+  bigPicture.querySelector(`.comments-count`).textContent = pictureData.comments.length;
+  bigPicture.querySelector(`.social__caption`).textContent = pictureData.description;
+  bigPicture.querySelector(`.big-picture__cancel`).addEventListener(`click`, hideBigPictureByClick);
+  document.body.addEventListener(`keydown`, hideBigPictureByEsc);
+  document.body.classList.add(`modal-open`);
+  const commentsBlock = bigPicture.querySelector(`.social__comments`);
+  commentsBlock.innerHTML = ``;
+  const comments = document.createDocumentFragment();
+  for (const comment of pictureData.comments) {
+    comments.appendChild(createCommentElem(comment));
+  }
+  commentsBlock.appendChild(comments);
+}
+
 function changeSize(sizeElement, imageUploadPreview, multiplier) {
   const currentValue = sizeElement.value;
   const newValue = parseInt(currentValue, 10) + SCALE_STEP * multiplier;
@@ -129,10 +187,10 @@ function setupSizeChanging(imageUploadPreview) {
 }
 
 function hideUploadFormByEsc(evt) {
-  if (evt.key === `Escape` && document.activeElement !== document.querySelector(`.text__hashtags`)) {
+  if (evt.key === `Escape` && document.activeElement !== document.querySelector(`.text__description`) && document.activeElement !== document.querySelector(`.text__hashtags`)) {
     hideBlock(`.img-upload__overlay`);
     document.body.classList.remove(`modal-open`);
-    document.body.removeEventListener(`keydown`, hideUploadFormByEsc);
+    document.querySelector(`.img-upload__overlay`).removeEventListener(`keydown`, hideUploadFormByEsc);
   }
 }
 
@@ -173,7 +231,7 @@ function setupEffectIntensityChanging(imageUploadPreview) {
     if (imageUploadPreview.classList.length > 1) {
       const effectClass = imageUploadPreview.classList[1];
       const effectIntensity = EFFECTS[effectClass.substring(18, effectClass.length)];
-      imageUploadPreview.querySelector(`img`).style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) / 100 }${effectIntensity.unit})`;
+      imageUploadPreview.querySelector(`img`).style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) / 100}${effectIntensity.unit})`;
     }
   });
 }
@@ -207,16 +265,42 @@ function checkHashTag(hashtagInput) {
       hashtagInput.setCustomValidity(`Hashtag is too long!!!`);
     } else if (hashTagRegExp.test(hashtag) !== true) {
       hashtagInput.setCustomValidity(`Hashtag must contain only '#', letters and numbers!!!`);
+    } else {
+      hashtagInput.setCustomValidity(``);
     }
+  }
+}
+
+function checkComment(commentInput) {
+  const comment = commentInput.value;
+  if (comment.length > COMMENT_MAX_LENGTH) {
+    commentInput.setCustomValidity(`Comment is too long!!!`);
+  } else if (comment.length === 0) {
+    commentInput.setCustomValidity(`You didn't add any comment!!!`);
   }
 }
 
 function main() {
   const pictureData = generatePictureData();
   generatePictureElems(pictureData);
+  const pictures = document.querySelectorAll(`.picture`);
+  for (let i = 0; i < pictureData.length; i++) {
+    pictures[i].addEventListener(`click`, function () {
+      bigPictureSetup(pictureData[i]);
+    });
+    pictures[i].addEventListener(`mousedown`, function (evt) {
+      if (evt.key === `Enter`) {
+        bigPictureSetup(pictureData[i]);
+      }
+    });
+  }
   const hashtagInput = document.querySelector(`.text__hashtags`);
   hashtagInput.addEventListener(`change`, function () {
     checkHashTag(hashtagInput);
+  });
+  const commentInput = document.querySelector(`.text__description`);
+  commentInput.addEventListener(`change`, function () {
+    checkComment(commentInput);
   });
   setupUploadFormShowing();
   setupUploadFormHiding();
