@@ -9,10 +9,14 @@
     for (const effect of effects) {
       effect.addEventListener(`change`, function () {
         if (effect.value === `none`) {
-          imageUploadPreview.querySelector(`img`).style.filter = ``;
+          imageUploadPreview.style.filter = ``;
           effectSlider.style.display = `none`;
         } else {
+          const effectIntensity = window.utils.effects[effect.value];
+          const effectIntensityElement = document.querySelector(`.effect-level__value`);
+          const effectIntensityValue = effectIntensityElement.value;
           effectSlider.style.display = `block`;
+          imageUploadPreview.style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) * effectIntensity.max / 100}${effectIntensity.unit})`;
         }
         imageUploadPreview.classList.remove(`effects__preview--${currentEffect}`);
         currentEffect = effect.value;
@@ -48,7 +52,7 @@
           const effectClass = imageUploadPreview.classList[1];
           const effectIntensity = window.utils.effects[effectClass.substring(18, effectClass.length)];
           if (effectClass !== `none`) {
-            imageUploadPreview.querySelector(`img`).style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) / 100}${effectIntensity.unit})`;
+            imageUploadPreview.style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) * effectIntensity.max / 100}${effectIntensity.unit})`;
           }
         }
       };
