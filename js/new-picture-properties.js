@@ -4,8 +4,20 @@
   function setupEffectChanging(imageUploadPreview) {
     const effects = document.querySelectorAll(`.effects__radio`);
     let currentEffect = `none`;
+    const effectSlider = document.querySelector(`.effect-level`);
+    effectSlider.style.display = `none`;
     for (const effect of effects) {
       effect.addEventListener(`change`, function () {
+        if (effect.value === `none`) {
+          imageUploadPreview.style.filter = ``;
+          effectSlider.style.display = `none`;
+        } else {
+          const effectIntensity = window.utils.effects[effect.value];
+          const effectIntensityElement = document.querySelector(`.effect-level__value`);
+          const effectIntensityValue = effectIntensityElement.value;
+          effectSlider.style.display = `block`;
+          imageUploadPreview.style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) * effectIntensity.max / 100}${effectIntensity.unit})`;
+        }
         imageUploadPreview.classList.remove(`effects__preview--${currentEffect}`);
         currentEffect = effect.value;
         imageUploadPreview.classList.add(`effects__preview--${currentEffect}`);
@@ -15,13 +27,41 @@
 
   function setupEffectIntensityChanging(imageUploadPreview) {
     const levelPin = document.querySelector(`.effect-level__pin`);
-    levelPin.addEventListener(`mousedown`, function () {
-      const effectIntensityValue = document.querySelector(`.effect-level__value`).value;
-      if (imageUploadPreview.classList.length > 1) {
-        const effectClass = imageUploadPreview.classList[1];
-        const effectIntensity = window.utils.effects[effectClass.substring(18, effectClass.length)];
-        imageUploadPreview.querySelector(`img`).style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) / 100}${effectIntensity.unit})`;
-      }
+    const effectIntensityElement = document.querySelector(`.effect-level__value`);
+    const effectLevelDepth = document.querySelector(`.effect-level__depth`);
+    levelPin.addEventListener(`mousedown`, function (evt) {
+      let startCoords = {
+        x: evt.clientX
+      };
+      const onMouseMove = function (moveEvt) {
+        let shift = {
+          x: startCoords.x - moveEvt.clientX
+        };
+        let newValue = levelPin.offsetLeft - shift.x;
+        const maxWidth = levelPin.parentElement.offsetWidth;
+        if (newValue >= 0 && newValue <= maxWidth) {
+          effectIntensityElement.value = newValue / maxWidth * 100;
+          levelPin.style.left = newValue + `px`;
+          effectLevelDepth.style.width = newValue + `px`;
+        }
+        startCoords = {
+          x: moveEvt.clientX
+        };
+        const effectIntensityValue = effectIntensityElement.value;
+        if (imageUploadPreview.classList.length > 1 && imageUploadPreview.classList[1] !== `none`) {
+          const effectClass = imageUploadPreview.classList[1];
+          const effectIntensity = window.utils.effects[effectClass.substring(18, effectClass.length)];
+          if (effectClass !== `none`) {
+            imageUploadPreview.style.filter = `${effectIntensity.effect}(${parseInt(effectIntensityValue, 10) * effectIntensity.max / 100}${effectIntensity.unit})`;
+          }
+        }
+      };
+      const onMouseUp = function () {
+        document.removeEventListener(`mousemove`, onMouseMove);
+        document.removeEventListener(`mouseup`, onMouseUp);
+      };
+      document.addEventListener(`mousemove`, onMouseMove);
+      document.addEventListener(`mouseup`, onMouseUp);
     });
   }
 
