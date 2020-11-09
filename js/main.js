@@ -1,6 +1,6 @@
 'use strict';
 
-function main() {
+(function () {
   const pictures = document.querySelectorAll(`.picture`);
   for (let i = 0; i < window.pictureData.length; i++) {
     pictures[i].addEventListener(`click`, function () {
@@ -28,6 +28,4 @@ function main() {
   window.newPictureSetup.setupEffectIntensityChanging(imageUploadPreview);
   document.querySelector(`.social__comment-count`).classList.add(`hidden`);
   document.querySelector(`.comments-loader`).classList.add(`hidden`);
-}
-
-main();
+})();
