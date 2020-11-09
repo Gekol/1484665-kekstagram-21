@@ -23,9 +23,9 @@
   window.uploadForm.setupUploadFormShowing();
   window.uploadForm.setupUploadFormHiding();
   const imageUploadPreview = document.querySelector(`.img-upload__preview`);
-  window.newPictureSetup.setupSizeChanging(imageUploadPreview);
-  window.newPictureSetup.setupEffectChanging(imageUploadPreview);
-  window.newPictureSetup.setupEffectIntensityChanging(imageUploadPreview);
+  window.newPictureProperties.setupSizeChanging(imageUploadPreview);
+  window.newPictureProperties.setupEffectChanging(imageUploadPreview);
+  window.newPictureProperties.setupEffectIntensityChanging(imageUploadPreview);
   document.querySelector(`.social__comment-count`).classList.add(`hidden`);
   document.querySelector(`.comments-loader`).classList.add(`hidden`);
 })();

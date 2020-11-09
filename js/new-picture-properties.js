@@ -46,7 +46,7 @@
     });
   }
 
-  window.newPictureSetup = {
+  window.newPictureProperties = {
     setupEffectChanging,
     setupEffectIntensityChanging,
     setupSizeChanging
