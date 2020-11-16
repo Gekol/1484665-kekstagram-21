@@ -2,15 +2,6 @@
 
 (function () {
 
-  function successHandler(pictureData) {
-    window.pictureData = pictureData;
-    generatePictureElems(pictureData);
-  }
-
-  function generatePictureData() {
-    window.backend.load(successHandler);
-  }
-
   function generatePictureElem(data) {
     const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
     const newElem = pictureTemplate.cloneNode(true);
@@ -29,6 +20,11 @@
     picturesList.appendChild(fragment);
   }
 
-  generatePictureData();
+  function successHandler(pictureData) {
+    window.pictureData = pictureData;
+    generatePictureElems(pictureData);
+  }
+
+  window.backend.load(successHandler);
 
 })();
