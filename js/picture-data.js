@@ -2,15 +2,6 @@
 
 (function () {
 
-  function successHandler(pictureData) {
-    window.pictureData = pictureData;
-    generatePictureElems(pictureData);
-  }
-
-  function generatePictureData() {
-    window.backend.load(successHandler);
-  }
-
   function generatePictureElem(data) {
     const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
     const newElem = pictureTemplate.cloneNode(true);
@@ -29,6 +20,22 @@
     picturesList.appendChild(fragment);
   }
 
-  generatePictureData();
+  function successHandler(pictureData) {
+    window.pictureData = pictureData;
+    generatePictureElems(pictureData);
+    const pictures = document.querySelectorAll(`.picture`);
+    for (let i = 0; i < window.pictureData.length; i++) {
+      pictures[i].addEventListener(`click`, function () {
+        window.bigPictureSetup(window.pictureData[i]);
+      });
+      pictures[i].addEventListener(`mousedown`, function (evt) {
+        if (evt.key === `Enter`) {
+          window.bigPictureSetup(window.pictureData[i]);
+        }
+      });
+    }
+  }
+
+  window.backend.load(successHandler);
 
 })();
