@@ -43,6 +43,9 @@
           onError();
         }
       });
+      xhr.addEventListener(`error`, function () {
+        onError();
+      });
 
       xhr.open(`POST`, URL);
       xhr.send(data);
