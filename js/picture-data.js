@@ -2,6 +2,19 @@
 
 (function () {
 
+<<<<<<< Updated upstream
+=======
+  function successHandler(pictureData) {
+    window.pictureData = pictureData;
+    generatePictureElems(pictureData);
+    document.querySelector(`.img-filters`).classList.remove(`img-filters--inactive`);
+  }
+
+  function generatePictureData() {
+    window.backend.load(successHandler);
+  }
+
+>>>>>>> Stashed changes
   function generatePictureElem(data) {
     const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
     const newElem = pictureTemplate.cloneNode(true);
