@@ -45,7 +45,7 @@
   }
 
   function successHandler() {
-    uploadForm.classList.add(`hidden`);
+    uploadForm.querySelector(`.img-upload__overlay`).classList.add(`hidden`);
     const pictureTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
     const successWindow = pictureTemplate.cloneNode(true);
     document.querySelector(`main`).appendChild(successWindow);
@@ -58,7 +58,7 @@
   }
 
   function errorHandler() {
-    uploadForm.classList.add(`hidden`);
+    uploadForm.querySelector(`.img-upload__overlay`).classList.add(`hidden`);
     const pictureTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
     const errorWindow = pictureTemplate.cloneNode(true);
     document.querySelector(`main`).appendChild(errorWindow);
