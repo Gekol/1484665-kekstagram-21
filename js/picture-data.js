@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  const RANDOM_ELEMENTS_COUNT = 10;
+
   function generatePictureElem(data) {
     const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
     const newElem = pictureTemplate.cloneNode(true);
@@ -31,48 +33,40 @@
     picturesList.appendChild(fragment);
   }
 
-  function makeActive(element, activeButton) {
-    activeButton.classList.remove(`img-filters__button--active`);
-    element.classList.add(`img-filters__button--active`);
-  }
-
   function addFilters() {
     document.querySelector(`.img-filters`).classList.remove(`img-filters--inactive`);
-    const buttons = document.querySelectorAll(`.img-filters__button`);
-    let defaultButton = buttons[0];
-    let randomButton = buttons[1];
-    let discussedButton = buttons[2];
-    let activeButton = buttons[0];
-    const getDefaultPictures = window.debounce(function () {
-      makeActive(defaultButton, activeButton);
+    const defaultButton = document.querySelector(`#filter-default`);
+    const randomButton = document.querySelector(`#filter-random`);
+    const discussedButton = document.querySelector(`#filter-discussed`);
+    let activeButton = document.querySelector(`#filter-default`);
+    const defaultButtonClickHandler = window.debounce(function () {
+      activeButton.classList.remove(`img-filters__button--active`);
+      defaultButton.classList.add(`img-filters__button--active`);
       activeButton = defaultButton;
       generatePictureElems(window.pictureData);
     });
-    const getRandomPictures = window.debounce(function () {
-      makeActive(randomButton, activeButton);
+    const randomButtonClickHandler = window.debounce(function () {
+      activeButton.classList.remove(`img-filters__button--active`);
+      randomButton.classList.add(`img-filters__button--active`);
       activeButton = randomButton;
-      const pictureData = [];
-      for (let i = 0; i < 10; i++) {
-        let picture = null;
-        while (picture === null || pictureData.includes(picture)) {
-          picture = window.pictureData[window.utils.generateRandomInt(0, window.utils.photosCount)];
-        }
-        pictureData[i] = picture;
-      }
-      generatePictureElems(pictureData);
+      const pictureData = [...window.pictureData];
+      const shuffled = pictureData.sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, RANDOM_ELEMENTS_COUNT);
+      generatePictureElems(selected);
     });
-    const getDiscussedPictures = window.debounce(function () {
+    const discussedButtonClickHandler = window.debounce(function () {
       let pictureData = [...window.pictureData];
       pictureData = pictureData.sort(function (a, b) {
-        return parseInt(b.likes, 10) - parseInt(a.likes, 10);
+        return parseInt(b.comments.length, 10) - parseInt(a.comments.length, 10);
       });
-      makeActive(discussedButton, activeButton);
+      activeButton.classList.remove(`img-filters__button--active`);
+      discussedButton.classList.add(`img-filters__button--active`);
       activeButton = discussedButton;
       generatePictureElems(pictureData);
     });
-    defaultButton.addEventListener(`click`, getDefaultPictures);
-    randomButton.addEventListener(`click`, getRandomPictures);
-    discussedButton.addEventListener(`click`, getDiscussedPictures);
+    defaultButton.addEventListener(`click`, defaultButtonClickHandler);
+    randomButton.addEventListener(`click`, randomButtonClickHandler);
+    discussedButton.addEventListener(`click`, discussedButtonClickHandler);
   }
 
   function successHandler(pictureData) {
