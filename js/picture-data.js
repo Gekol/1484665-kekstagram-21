@@ -7,6 +7,14 @@
     newElem.querySelector(`.picture__img`).src = data.url;
     newElem.querySelector(`.picture__likes`).textContent = data.likes;
     newElem.querySelector(`.picture__comments`).textContent = data.comments.length.toString();
+    newElem.addEventListener(`click`, function () {
+      window.bigPictureSetup(data);
+    });
+    newElem.addEventListener(`keydown`, function (evt) {
+      if (evt.key === `Enter`) {
+        window.bigPictureSetup(data);
+      }
+    });
     return newElem;
   }
 
@@ -75,7 +83,7 @@
       pictures[i].addEventListener(`click`, function () {
         window.bigPictureSetup(window.pictureData[i]);
       });
-      pictures[i].addEventListener(`mousedown`, function (evt) {
+      pictures[i].addEventListener(`keydown`, function (evt) {
         if (evt.key === `Enter`) {
           window.bigPictureSetup(window.pictureData[i]);
         }
