@@ -30,27 +30,8 @@
     });
   }
 
-  function modalWindowHideByButtonClick(window) {
-    return function () {
-      document.querySelector(`main`).removeChild(window);
-    };
-  }
-
-  function modalWindowHideByEsc(window) {
-    return function (evt) {
-      if (evt.key === `Escape`) {
-        document.querySelector(`main`).removeChild(window);
-      }
-    };
-  }
-
-  function modalWindowHideByOutsideClick(window) {
-    return function (evt) {
-      let inner = window.children[0];
-      if (evt.target !== inner && !(new Array(inner.children)).includes(evt.target)) {
-        document.querySelector(`main`).removeChild(window);
-      }
-    };
+  function hideWindow(window) {
+    document.querySelector(`main`).removeChild(window);
   }
 
   function successHandler() {
@@ -60,11 +41,20 @@
     const successWindow = pictureTemplate.cloneNode(true);
     document.querySelector(`main`).appendChild(successWindow);
     const successButton = document.querySelector(`.success__button`);
-    const successWindowHideByButtonClick = modalWindowHideByButtonClick(successWindow);
-    successButton.addEventListener(`click`, successWindowHideByButtonClick);
-    const successWindowHideByEsc = modalWindowHideByEsc(successWindow);
-    document.addEventListener(`keydown`, successWindowHideByEsc);
-    document.addEventListener(`click`, modalWindowHideByOutsideClick(successWindow));
+    successButton.addEventListener(`click`, function () {
+      hideWindow(successWindow);
+    });
+    document.addEventListener(`keydown`, function (evt) {
+      if (evt.key === `Escape`) {
+        hideWindow(successWindow);
+      }
+    });
+    document.addEventListener(`click`, function (evt) {
+      let inner = window.children[0];
+      if (evt.target !== inner && !(new Array(inner.children)).includes(evt.target)) {
+        hideWindow(successWindow);
+      }
+    });
     uploadForm.reset();
   }
 
@@ -75,10 +65,20 @@
     const errorWindow = pictureTemplate.cloneNode(true);
     document.querySelector(`main`).appendChild(errorWindow);
     const errorButton = document.querySelector(`.error__button`);
-    const errorWindowHideByButtonClick = modalWindowHideByButtonClick(errorWindow);
-    errorButton.addEventListener(`click`, errorWindowHideByButtonClick);
-    const errorWindowHideByEsc = modalWindowHideByEsc(errorWindow);
-    document.addEventListener(`keydown`, errorWindowHideByEsc);
+    errorButton.addEventListener(`click`, function () {
+      hideWindow(errorWindow);
+    });
+    document.addEventListener(`keydown`, function (evt) {
+      if (evt.key === `Escape`) {
+        hideWindow(errorWindow);
+      }
+    });
+    document.addEventListener(`click`, function (evt) {
+      let inner = window.children[0];
+      if (evt.target !== inner && !(new Array(inner.children)).includes(evt.target)) {
+        hideWindow(errorWindow);
+      }
+    });
     uploadForm.reset();
   }
 

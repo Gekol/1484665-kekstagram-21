@@ -1,20 +1,6 @@
 'use strict';
 
 (function () {
-
-<<<<<<< Updated upstream
-=======
-  function successHandler(pictureData) {
-    window.pictureData = pictureData;
-    generatePictureElems(pictureData);
-    document.querySelector(`.img-filters`).classList.remove(`img-filters--inactive`);
-  }
-
-  function generatePictureData() {
-    window.backend.load(successHandler);
-  }
-
->>>>>>> Stashed changes
   function generatePictureElem(data) {
     const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
     const newElem = pictureTemplate.cloneNode(true);
@@ -36,6 +22,7 @@
   function successHandler(pictureData) {
     window.pictureData = pictureData;
     generatePictureElems(pictureData);
+    document.querySelector(`.img-filters`).classList.remove(`img-filters--inactive`);
     const pictures = document.querySelectorAll(`.picture`);
     for (let i = 0; i < window.pictureData.length; i++) {
       pictures[i].addEventListener(`click`, function () {
