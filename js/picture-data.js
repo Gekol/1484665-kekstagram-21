@@ -62,7 +62,8 @@
       generatePictureElems(pictureData);
     });
     const getDiscussedPictures = window.debounce(function () {
-      const pictureData = window.pictureData.sort(function (a, b) {
+      let pictureData = [...window.pictureData];
+      pictureData = pictureData.sort(function (a, b) {
         return parseInt(b.likes, 10) - parseInt(a.likes, 10);
       });
       makeActive(discussedButton, activeButton);
