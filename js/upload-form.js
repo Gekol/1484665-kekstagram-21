@@ -34,13 +34,13 @@
     document.querySelector(`main`).removeChild(window);
   }
 
-  function successHandler() {
+  function addListeners(containerName) {
     uploadForm.querySelector(`.img-upload__overlay`).classList.add(`hidden`);
     document.body.classList.remove(`modal-open`);
-    const pictureTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
+    const pictureTemplate = document.querySelector(`#${containerName}`).content.querySelector(`.${containerName}`);
     const successWindow = pictureTemplate.cloneNode(true);
     document.querySelector(`main`).appendChild(successWindow);
-    const successButton = document.querySelector(`.success__button`);
+    const successButton = document.querySelector(`.${containerName}__button`);
     successButton.addEventListener(`click`, function () {
       hideWindow(successWindow);
     });
@@ -58,28 +58,12 @@
     uploadForm.reset();
   }
 
+  function successHandler() {
+    addListeners(`success`);
+  }
+
   function errorHandler() {
-    uploadForm.querySelector(`.img-upload__overlay`).classList.add(`hidden`);
-    document.body.classList.remove(`modal-open`);
-    const pictureTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
-    const errorWindow = pictureTemplate.cloneNode(true);
-    document.querySelector(`main`).appendChild(errorWindow);
-    const errorButton = document.querySelector(`.error__button`);
-    errorButton.addEventListener(`click`, function () {
-      hideWindow(errorWindow);
-    });
-    document.addEventListener(`keydown`, function (evt) {
-      if (evt.key === `Escape`) {
-        hideWindow(errorWindow);
-      }
-    });
-    document.addEventListener(`click`, function (evt) {
-      let inner = window.children[0];
-      if (evt.target !== inner && !(new Array(inner.children)).includes(evt.target)) {
-        hideWindow(errorWindow);
-      }
-    });
-    uploadForm.reset();
+    addListeners(`error`);
   }
 
   uploadForm.addEventListener(`submit`, function (evt) {
