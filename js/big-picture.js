@@ -29,6 +29,28 @@
     document.body.removeEventListener(`keydown`, hideBigPictureByEsc);
   }
 
+  function addComments(commentsData, bigPicture, commentsNumber) {
+    const commentsBlock = bigPicture.querySelector(`.social__comments`);
+    commentsBlock.innerHTML = ``;
+    const comments = document.createDocumentFragment();
+    for (let i = 0; i < commentsNumber; i++) {
+      comments.appendChild(createCommentElem(commentsData[i]));
+    }
+    commentsBlock.appendChild(comments);
+  }
+
+  function addCommentseventListener(pictureData, commentsLoader, bigPicture, commentsNumber) {
+    function addCommentsByClick() {
+      commentsNumber += Math.min(5, pictureData.comments.length - commentsNumber);
+      addComments(pictureData.comments, bigPicture, commentsNumber);
+      if (commentsNumber === pictureData.comments.length) {
+        commentsLoader.classList.add(`hidden`);
+        commentsLoader.removeEventListener(`click`, addCommentsByClick);
+      }
+    }
+    commentsLoader.addEventListener(`click`, addCommentsByClick);
+  }
+
   function bigPictureSetup(pictureData) {
     const bigPicture = document.querySelector(`.big-picture`);
     bigPicture.classList.remove(`hidden`);
@@ -39,13 +61,13 @@
     bigPicture.querySelector(`.big-picture__cancel`).addEventListener(`click`, hideBigPictureByClick);
     document.body.addEventListener(`keydown`, hideBigPictureByEsc);
     document.body.classList.add(`modal-open`);
-    const commentsBlock = bigPicture.querySelector(`.social__comments`);
-    commentsBlock.innerHTML = ``;
-    const comments = document.createDocumentFragment();
-    for (const comment of pictureData.comments) {
-      comments.appendChild(createCommentElem(comment));
+    let commentsNumber = Math.min(5, pictureData.comments.length);
+    addComments(pictureData.comments, bigPicture, commentsNumber);
+    if (pictureData.comments.length > 5) {
+      const commentsLoader = document.querySelector(`.comments-loader`);
+      commentsLoader.classList.remove(`hidden`);
+      addCommentseventListener(pictureData, commentsLoader, bigPicture, commentsNumber);
     }
-    commentsBlock.appendChild(comments);
   }
 
   window.bigPictureSetup = bigPictureSetup;
